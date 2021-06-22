@@ -13,7 +13,9 @@ class Ui(QtWidgets.QMainWindow):
         super(Ui, self).__init__()
         uic.loadUi('pyclip.ui', self)
 
-        self.hidden = True  #Hide clips at the start
+        self.hidden = True
+        self.now = date.today()
+        self.is_filter = True
 
         if os.path.exists('.' + os.sep + 'copypaste.db'):
             self.connection = sqlite3.connect('copypaste.db')
@@ -25,22 +27,23 @@ class Ui(QtWidgets.QMainWindow):
         self.connection.row_factory = lambda cursor, row: row[0]
         self.cursor = self.connection.cursor()
 
-        self.cliplist = self.cursor.execute("select clip from clips").fetchall()
+        self.cliplist = self.cliplist_today = self.cursor.execute("select clip from clips where created = :now", {'now': self.now}).fetchall()
         self.cliplist_widget = self.findChild(QtWidgets.QListWidget, 'clip_list')
         self.cliplist_widget.addItems(self.cliplist)
 
+        self.calendar_widget = self.findChild(QtWidgets.QCalendarWidget, 'calendar')
+        self.calendar_widget.clicked.connect(self.date_changed)
+
         x = threading.Thread(target=self.clip_listener)
         x.start()
-        # self.sh_btn = self.findChild(QtWidgets.QPushButton, 'show_hide_btn')
-        # self.sh_btn.setText('Text Changed2')
-        # self.sh_btn.clicked.connect(self.sh_btn_pressed)
-        # self.line_text = self.findChild(QtWidgets.QLineEdit, 'line_text')
-        # self.line_text.setText('Oppapapa')
+
         self.show()
 
-    def sh_btn_pressed(self):
-        self.line_text.setText('miyagi')
-        print(self.line_text.text())
+    def date_changed(self):
+        self.now = self.calendar_widget.selectedDate().toString('yyyy-MM-dd')
+        self.cliplist = self.cursor.execute("select clip from clips where created = :now", {'now': self.now}).fetchall()
+        self.cliplist_widget.clear()
+        self.cliplist_widget.addItems(self.cliplist)
 
     def clip_listener(self):
         connection = sqlite3.connect('copypaste.db')
@@ -48,12 +51,12 @@ class Ui(QtWidgets.QMainWindow):
         while True:
             time.sleep(1)
             clip = pyclip.paste().decode().strip("'").replace("'", "''")  # text will have the content of clipboard
-            if clip not in self.cliplist:
-                td = date.today()
-                cursor.execute(f"INSERT INTO clips (clip, created) VALUES ('{clip}','{td}')")
+            if clip not in self.cliplist_today:
+                cursor.execute(f"INSERT INTO clips (clip, created) VALUES ('{clip}','{self.now}')")
                 connection.commit()
-                self.cliplist.append(clip)
-                self.cliplist_widget.insertItem(0, clip)
+                if self.now == date.today():
+                    self.cliplist_today.append(clip)
+                    self.cliplist_widget.insertItem(0, clip)
 
 
 if __name__ == '__main__':
