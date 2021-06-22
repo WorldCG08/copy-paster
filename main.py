@@ -29,6 +29,7 @@ class Ui(QtWidgets.QMainWindow):
 
         self.cliplist = self.cliplist_today = self.clipQuery()
         self.cliplist_widget = self.findChild(QtWidgets.QListWidget, 'clip_list')
+        self.cliplist_widget.doubleClicked.connect(self.clip_copy_to)
         self.clipwidget_reload()
 
         self.calendar_widget = self.findChild(QtWidgets.QCalendarWidget, 'calendar')
@@ -85,6 +86,10 @@ class Ui(QtWidgets.QMainWindow):
             self.connection.commit()
             print(item.text())
             self.cliplist_widget.takeItem(self.cliplist_widget.row(item))
+
+    def clip_copy_to(self):
+        for item in self.cliplist_widget.selectedItems():
+            pyclip.copy(item.text())
 
 
 if __name__ == '__main__':
