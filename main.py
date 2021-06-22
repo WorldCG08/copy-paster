@@ -37,6 +37,9 @@ class Ui(QtWidgets.QMainWindow):
         self.filter_box = self.findChild(QtWidgets.QCheckBox, 'filter_checkbox')
         self.filter_box.clicked.connect(self.filter_box_switch)
 
+        self.del_btn = self.findChild(QtWidgets.QPushButton, 'del_btn')
+        self.del_btn.clicked.connect(self.delete_clip)
+
         x = threading.Thread(target=self.clip_listener)
         x.start()
 
@@ -74,8 +77,17 @@ class Ui(QtWidgets.QMainWindow):
         else:
             return self.cursor.execute("select clip from clips").fetchall()
 
+    def delete_clip(self):
+        listItems = self.cliplist_widget.selectedItems()
+        if not listItems: return
+        for item in listItems:
+            self.cursor.execute(f"DELETE FROM clips WHERE clip = '{item.text()}'")
+            self.connection.commit()
+            print(item.text())
+            self.cliplist_widget.takeItem(self.cliplist_widget.row(item))
+
 
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv) # Create an instance of QtWidgets.QApplication
-    window = Ui() # Create an instance of our class
+    app = QtWidgets.QApplication(sys.argv)  # Create an instance of QtWidgets.QApplication
+    window = Ui()  # Create an instance of our class
     app.exec_()

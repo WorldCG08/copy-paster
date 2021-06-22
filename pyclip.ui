@@ -40,7 +40,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="show_hide_btn">
+   <widget class="QPushButton" name="del_btn">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -50,7 +50,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Show / Hide</string>
+     <string>Delete</string>
     </property>
    </widget>
    <widget class="QListWidget" name="clip_list">
