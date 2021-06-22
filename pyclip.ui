@@ -37,16 +37,6 @@
      <string>Filter</string>
     </property>
    </widget>
-   <widget class="QListView" name="clip_list">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>391</width>
-      <height>421</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="show_hide_btn">
     <property name="geometry">
      <rect>
@@ -80,6 +70,16 @@
       <y>480</y>
       <width>271</width>
       <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="clip_list">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>391</width>
+      <height>421</height>
      </rect>
     </property>
    </widget>
