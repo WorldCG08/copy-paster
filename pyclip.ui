@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>510</y>
+      <y>470</y>
       <width>392</width>
       <height>236</height>
      </rect>
@@ -27,14 +27,17 @@
    <widget class="QCheckBox" name="filter_checkbox">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>480</y>
+      <x>110</x>
+      <y>440</y>
       <width>81</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>Filter</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="show_hide_btn">
@@ -48,29 +51,6 @@
     </property>
     <property name="text">
      <string>Show / Hide</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="delete_btn">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>440</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Delete</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="line_text">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>480</y>
-      <width>271</width>
-      <height>22</height>
-     </rect>
     </property>
    </widget>
    <widget class="QListWidget" name="clip_list">

@@ -15,7 +15,7 @@ class Ui(QtWidgets.QMainWindow):
 
         self.hidden = True
         self.now = date.today()
-        self.is_filter = True
+        self.is_filter = 2
 
         if os.path.exists('.' + os.sep + 'copypaste.db'):
             self.connection = sqlite3.connect('copypaste.db')
@@ -27,12 +27,15 @@ class Ui(QtWidgets.QMainWindow):
         self.connection.row_factory = lambda cursor, row: row[0]
         self.cursor = self.connection.cursor()
 
-        self.cliplist = self.cliplist_today = self.cursor.execute("select clip from clips where created = :now", {'now': self.now}).fetchall()
+        self.cliplist = self.cliplist_today = self.clipQuery()
         self.cliplist_widget = self.findChild(QtWidgets.QListWidget, 'clip_list')
-        self.cliplist_widget.addItems(self.cliplist)
+        self.clipwidget_reload()
 
         self.calendar_widget = self.findChild(QtWidgets.QCalendarWidget, 'calendar')
         self.calendar_widget.clicked.connect(self.date_changed)
+
+        self.filter_box = self.findChild(QtWidgets.QCheckBox, 'filter_checkbox')
+        self.filter_box.clicked.connect(self.filter_box_switch)
 
         x = threading.Thread(target=self.clip_listener)
         x.start()
@@ -41,9 +44,11 @@ class Ui(QtWidgets.QMainWindow):
 
     def date_changed(self):
         self.now = self.calendar_widget.selectedDate().toString('yyyy-MM-dd')
-        self.cliplist = self.cursor.execute("select clip from clips where created = :now", {'now': self.now}).fetchall()
-        self.cliplist_widget.clear()
-        self.cliplist_widget.addItems(self.cliplist)
+        self.clipwidget_reload()
+
+    def filter_box_switch(self):
+        self.is_filter = self.filter_box.checkState()
+        self.clipwidget_reload()
 
     def clip_listener(self):
         connection = sqlite3.connect('copypaste.db')
@@ -57,6 +62,17 @@ class Ui(QtWidgets.QMainWindow):
                 if self.now == date.today():
                     self.cliplist_today.append(clip)
                     self.cliplist_widget.insertItem(0, clip)
+
+    def clipwidget_reload(self):
+        self.cliplist = self.clipQuery()
+        self.cliplist_widget.clear()
+        self.cliplist_widget.addItems(self.cliplist)
+
+    def clipQuery(self):
+        if self.is_filter == 2:
+            return self.cursor.execute("select clip from clips where created = :now", {'now': self.now}).fetchall()
+        else:
+            return self.cursor.execute("select clip from clips").fetchall()
 
 
 if __name__ == '__main__':
